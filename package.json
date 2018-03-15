@@ -1,0 +1,16 @@
+{
+  "name": "gserver",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "test test.js "
+  },
+  "author": "andrenatal",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@google-cloud/speech": "^1.1.0",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3"
+  }
+}
