@@ -41,11 +41,11 @@ app.post('/asr', function (req, res, next) {
     .then(data => {
         const response = data[0];
         res.status(200).send(`${response.results[0].alternatives[0].transcript} - ${response.results[0].alternatives[0].confidence}`);
-        console.log('result 200' + `${response.results[0].alternatives[0].transcript}`);
+        console.log('result 200' + `${response.results[0].alternatives[0].transcript} ` + Date.now());
         return;
     })
     .catch(err => {
-        console.log('result 500:', err);
+        console.log('result 500:', err, Date.now());
         res.status(500).send('err');
         return;
     });
