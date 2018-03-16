@@ -40,7 +40,8 @@ app.post('/asr', function (req, res, next) {
     .recognize(request)
     .then(data => {
         const response = data[0];
-        res.status(200).send(`${response.results[0].alternatives[0].transcript} - ${response.results[0].alternatives[0].confidence}`);
+        const result = '{"status":"ok","data":[{"confidence":'+ response.results[0].alternatives[0].confidence + '},"text":"' + response.results[0].alternatives[0].transcript + '"}]}';
+        res.status(200).send(result);
         console.log('result 200' + `${response.results[0].alternatives[0].transcript} ` + Date.now());
         return;
     })
