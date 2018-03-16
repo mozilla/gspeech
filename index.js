@@ -41,9 +41,11 @@ app.post('/asr', function (req, res, next) {
     .then(data => {
         const response = data[0];
         res.status(200).send(`${response.results[0].alternatives[0].transcript} - ${response.results[0].alternatives[0].confidence}`);
+        console.log('result 200' + `${response.results[0].alternatives[0].transcript}`);
         return;
     })
     .catch(err => {
+        console.log('result 500:', err);
         res.status(500).send('err');
         return;
     });
