@@ -5,6 +5,10 @@ const express = require('express');
 const app = express();
 const speech = require('@google-cloud/speech');
 
+const config = {
+    port: process.env.PORT || 8000
+};
+
 app.use(
     bodyParser.raw({
       limit: 1024000,
@@ -52,4 +56,4 @@ app.post('/asr', function (req, res, next) {
     });
 })
 
-app.listen(3000);
+app.listen(config.port);
