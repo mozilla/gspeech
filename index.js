@@ -42,7 +42,7 @@ app.post('/asr', (req, res) => {
     .then((data) => {
       const response = data[0];
       const result = response.results[0].alternatives[0];
-      console.log(`${Date.now()}: SUCCESS: ${result}`);
+      console.log(`${Date.now()}: SUCCESS: ${result.transcript} - Language: ${lang}`);
       res.status(200).json({
         status: 'ok',
         data: [
