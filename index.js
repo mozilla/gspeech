@@ -15,48 +15,54 @@ app.use(
   })
 );
 
-app.post('/asr', (req, res) => {
-  // Creates a client
-  const client = new speech.SpeechClient();
+app.post('/asr', async (req, res) => {
+  try {
+    // Creates a client
+    const client = new speech.SpeechClient();
+    const audio = {
+      content: req.body.toString('base64'),
+    };
 
-  // The audio file's encoding, sample rate in hertz, and BCP-47 language code
-  const audio = {
-    content: req.body.toString('base64'),
-  };
+    const lang =
+      req.headers['accept-language'] != null ?
+        req.headers['accept-language'] :
+        'en-us';
+    const config = {
+      encoding: 'LINEAR16',
+      sampleRateHertz: 16000,
+      languageCode: lang,
+    };
+    const request = {
+      audio: audio,
+      config: config,
+    };
 
-  const lang = req.headers['accept-language'] != null ? req.headers['accept-language'] : "en-us";
-  const config = {
-    encoding: 'LINEAR16',
-    sampleRateHertz: 16000,
-    languageCode: lang,
-  };
-
-  const request = {
-    audio: audio,
-    config: config,
-  };
-
-  // Detects speech in the audio file
-  client
-    .recognize(request)
-    .then((data) => {
-      const response = data[0];
-      const result = response.results[0].alternatives[0];
-      console.log(`${Date.now()}: SUCCESS: ${result.transcript} - Language: ${lang}`);
+    // Detects speech in the audio file
+    const [response] = await client.recognize(request);
+    const transcription = response.results
+      .map((result) => result.alternatives[0].transcript)
+      .join(' ');
+    const confidence = response.results
+      .map((result) => result.alternatives[0].confidence);
+    console.log(`${Date.now()}: SUCCESS: ${transcription} - Language: ${lang}`);
+    if (confidence.length >= 1) {
       res.status(200).json({
         status: 'ok',
         data: [
           {
-            confidence: result.confidence,
-            text: result.transcript,
+            confidence: confidence[0],
+            text: transcription,
           },
         ],
       });
-    })
-    .catch((err) => {
-      console.log(`${Date.now()}: ERROR: ${err}`);
+    } else {
+      console.log(`${Date.now()}: Returning 500.`);
       res.status(500).send('err');
-    });
+    }
+  } catch (error) {
+    console.log(`${Date.now()}: ERROR: ${error}`);
+    res.status(500).send('err');
+  }
 });
 
 app.listen(config.port);
