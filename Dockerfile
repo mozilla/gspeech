@@ -1,10 +1,14 @@
-FROM node:9
+FROM node:12 AS node-builder
+USER node
+RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
+COPY package*.json ./
+RUN npm ci
 
-RUN npm install --save @google-cloud/speech body-parser express
-
-RUN mkdir -p /app/gspeech-proxy/
-COPY * /app/gspeech-proxy/
-
-# Set the default command
-WORKDIR /app/gspeech-proxy
-CMD node index.js
+FROM node:12-slim
+USER node
+RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
+COPY --chown=node:node . .
+COPY --chown=node:node --from=node-builder /home/node/app/node_modules/ ./node_modules/
+CMD [ "/usr/local/bin/node", "index.js" ]
